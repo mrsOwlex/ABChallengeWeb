@@ -14,9 +14,7 @@ export default function TilesPage() {
     }
   }, [initialize, isInitialized])
 
-  const completedCount = tiles.filter(tile =>
-    tile.dateEnabled && tile.date
-  ).length
+  const completedCount = tiles.filter(tile => tile.thumbFileId).length
 
   return (
     <div className="h-[100dvh] flex flex-col overflow-hidden">

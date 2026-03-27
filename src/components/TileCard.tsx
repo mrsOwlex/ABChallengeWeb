@@ -13,11 +13,9 @@ export const TileCard = memo(function TileCard({ tile, index }: TileCardProps) {
   const { url } = useThumbnail(tile.thumbFileId)
   const [imgLoaded, setImgLoaded] = useState(false)
 
-  const isDone = !!(tile.dateEnabled && tile.date)
-  const hasIdea = !isDone && !!(
-    tile.thumbFileId ||
-    (tile.note && tile.note.trim().length > 0)
-  )
+  const isDone = !!tile.thumbFileId
+  const isPlanned = !isDone && !!(tile.dateEnabled && tile.date)
+  const hasIdea = !isDone && !isPlanned && !!(tile.note && tile.note.trim().length > 0)
 
   const handleClick = () => {
     navigate(`/tiles/${tile.id}`)
@@ -29,7 +27,7 @@ export const TileCard = memo(function TileCard({ tile, index }: TileCardProps) {
       className={`
         w-full h-full relative overflow-hidden flex items-center justify-center
         transition-all duration-200 active:scale-[0.93] animate-tile-in
-        ${isDone ? 'tile-complete' : hasIdea ? 'tile-idea' : 'tile-incomplete'}
+        ${isDone ? 'tile-complete' : isPlanned ? 'tile-planned' : hasIdea ? 'tile-idea' : 'tile-incomplete'}
       `}
       style={{
         animationDelay: `${index * 25}ms`,
@@ -59,13 +57,14 @@ export const TileCard = memo(function TileCard({ tile, index }: TileCardProps) {
         className={`
           relative z-10 font-black leading-none select-none
           ${url && imgLoaded ? 'text-white drop-shadow-lg' : ''}
-          ${!isDone && !hasIdea ? 'text-white/[0.15]' : ''}
+          ${!isDone && !isPlanned && !hasIdea ? 'text-white/[0.15]' : ''}
         `}
         style={{
           fontSize: 'clamp(1.3rem, 5.5vw, 3rem)',
           ...(!url || !imgLoaded ? {
-            color: isDone ? 'var(--theme-done)' : hasIdea ? 'var(--theme-idea)' : undefined,
+            color: isDone ? 'var(--theme-done)' : isPlanned ? 'var(--theme-g2)' : hasIdea ? 'var(--theme-idea)' : undefined,
             textShadow: isDone ? '0 0 24px rgba(var(--theme-done-rgb),0.4)' :
+                        isPlanned ? '0 0 20px rgba(var(--theme-g2-rgb),0.3)' :
                         hasIdea ? '0 0 20px rgba(var(--theme-idea-rgb),0.3)' : 'none',
           } : {
             textShadow: 'none',
@@ -88,6 +87,9 @@ export const TileCard = memo(function TileCard({ tile, index }: TileCardProps) {
             <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
           </svg>
         </div>
+      )}
+      {isPlanned && (
+        <span className="absolute bottom-1 right-1 text-[10px] leading-none" style={{ filter: `drop-shadow(0 0 4px rgba(var(--theme-g2-rgb),0.5))` }}>📅</span>
       )}
       {hasIdea && (
         <span className="absolute bottom-1 right-1 text-[10px] leading-none" style={{ filter: `drop-shadow(0 0 4px rgba(var(--theme-idea-rgb),0.5))` }}>💡</span>
