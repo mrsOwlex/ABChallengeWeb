@@ -1,6 +1,7 @@
 import { useEffect } from 'react'
 import { useTilesStore } from '@/state/tilesStore'
 import { AppHeader } from '@/components/AppHeader'
+import { AutoThemeWatcher } from '@/components/AutoThemeWatcher'
 import { OfflineBanner } from '@/components/OfflineBanner'
 import { TileGrid } from '@/components/TileGrid'
 
@@ -20,6 +21,7 @@ export default function TilesPage() {
   return (
     <div className="h-[100dvh] flex flex-col overflow-hidden">
       <AppHeader />
+      <AutoThemeWatcher />
       <OfflineBanner />
 
       {/* Progress bar */}

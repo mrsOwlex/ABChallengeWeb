@@ -22,6 +22,14 @@ class ThumbCache {
     }
   }
 
+  getCachedUrl(fileId: string): string | undefined {
+    return this.cache.get(fileId)
+  }
+
+  getAllCachedUrls(): Map<string, string> {
+    return new Map(this.cache)
+  }
+
   clear(): void {
     this.cache.forEach(url => {
       URL.revokeObjectURL(url)
@@ -31,6 +39,19 @@ class ThumbCache {
 }
 
 const globalThumbCache = new ThumbCache()
+
+export function getCachedThumbUrl(fileId: string): string | undefined {
+  return globalThumbCache.getCachedUrl(fileId)
+}
+
+export function getAllCachedThumbUrls(): Map<string, string> {
+  return globalThumbCache.getAllCachedUrls()
+}
+
+/** Load a thumbnail (fetches if not cached, returns cached if available) */
+export function loadThumbUrl(fileId: string): Promise<string | null> {
+  return globalThumbCache.getUrl(fileId)
+}
 
 export function useThumbCache() {
   const cacheRef = useRef(globalThumbCache)

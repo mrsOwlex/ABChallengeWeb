@@ -1,4 +1,4 @@
-export type ThemeId = 'aurora' | 'sunset' | 'ocean' | 'blossom'
+export type ThemeId = 'aurora' | 'sunset' | 'ocean' | 'blossom' | 'auto'
 
 export interface ThemeConfig {
   id: ThemeId
@@ -15,7 +15,8 @@ export interface ThemeConfig {
   swatch: [string, string]
 }
 
-export const THEMES: Record<ThemeId, ThemeConfig> = {
+type StaticThemeId = Exclude<ThemeId, 'auto'>
+export const THEMES: Record<StaticThemeId, ThemeConfig> = {
   aurora: {
     id: 'aurora',
     labelKey: 'theme.aurora',
@@ -55,17 +56,18 @@ export const THEMES: Record<ThemeId, ThemeConfig> = {
 }
 
 export const DEFAULT_THEME: ThemeId = 'aurora'
-export const THEME_IDS = Object.keys(THEMES) as ThemeId[]
+export const THEME_IDS = Object.keys(THEMES) as StaticThemeId[]
 
 /** Convert hex to "r, g, b" string for use in rgba() */
-function hexToRgb(hex: string): string {
+export function hexToRgb(hex: string): string {
   const n = parseInt(hex.slice(1), 16)
   return `${(n >> 16) & 255}, ${(n >> 8) & 255}, ${n & 255}`
 }
 
 /** Apply theme as CSS custom properties on document.body */
-export function applyTheme(id: ThemeId): void {
-  const t = THEMES[id]
+export function applyTheme(id: ThemeId, override?: ThemeConfig): void {
+  const t = id === 'auto' ? override! : THEMES[id as StaticThemeId]
+  if (!t) return
   const s = document.body.style
 
   s.setProperty('--theme-g1', t.gradient[0])

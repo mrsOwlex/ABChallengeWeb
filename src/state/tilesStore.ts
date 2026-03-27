@@ -1,6 +1,7 @@
 import { create } from 'zustand'
 import { Tile, DEFAULT_FILLER_TEXT, updateTile } from '@/models/tile'
 import { ThemeId, DEFAULT_THEME, applyTheme } from '@/models/theme'
+import { useAutoThemeStore } from '@/state/autoThemeStore'
 import { driveStorage } from '@/services/driveStorage'
 import { debounce } from '@/utils/debounce'
 import { offlineQueue } from '@/services/offlineQueue'
@@ -80,7 +81,12 @@ export const useTilesStore = create<TilesState>((set, get) => {
         await driveStorage.initialize()
         const data = await driveStorage.loadData()
         const theme = (data.theme as ThemeId) || DEFAULT_THEME
-        applyTheme(theme)
+        // For 'auto', apply fallback until auto-theme is computed
+        if (theme === 'auto') {
+          applyTheme(DEFAULT_THEME)
+        } else {
+          applyTheme(theme)
+        }
 
         // Check for pending offline changes
         const pending = offlineQueue.getPending()
@@ -128,7 +134,11 @@ export const useTilesStore = create<TilesState>((set, get) => {
       try {
         const data = await driveStorage.loadData()
         const theme = (data.theme as ThemeId) || DEFAULT_THEME
-        applyTheme(theme)
+        if (theme === 'auto') {
+          applyTheme(DEFAULT_THEME)
+        } else {
+          applyTheme(theme)
+        }
         set({ tiles: data.tiles, fillerText: data.fillerText, theme, isLoading: false })
       } catch (error) {
         set({
@@ -152,7 +162,13 @@ export const useTilesStore = create<TilesState>((set, get) => {
     },
 
     setTheme: (newTheme: ThemeId) => {
-      applyTheme(newTheme)
+      if (newTheme === 'auto') {
+        const autoTheme = useAutoThemeStore.getState().autoTheme
+        if (autoTheme) applyTheme('auto', autoTheme)
+        else applyTheme(DEFAULT_THEME) // Fallback until computed
+      } else {
+        applyTheme(newTheme)
+      }
       set({ theme: newTheme, saveStatus: 'saving' })
       debouncedSave()
     },

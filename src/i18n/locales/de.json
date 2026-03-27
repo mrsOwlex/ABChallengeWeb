@@ -61,7 +61,8 @@
     "aurora": "Aurora",
     "sunset": "Sonnenuntergang",
     "ocean": "Ozean",
-    "blossom": "Blüte"
+    "blossom": "Blüte",
+    "auto": "Auto"
   },
   "language": {
     "switchTo": "Sprache wechseln",
