@@ -78,5 +78,13 @@
     "switchTo": "Switch language",
     "de": "Deutsch",
     "en": "English"
+  },
+  "diary": {
+    "title": "Diary",
+    "toggleGrid": "Grid view",
+    "toggleDiary": "Diary view",
+    "emptyTitle": "Your diary is empty",
+    "emptySubtitle": "Complete activities to see them appear in your timeline",
+    "ideasSection": "Ideas"
   }
 }

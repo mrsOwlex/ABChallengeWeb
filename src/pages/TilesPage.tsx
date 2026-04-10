@@ -1,12 +1,27 @@
-import { useEffect } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import { useTilesStore } from '@/state/tilesStore'
 import { AppHeader } from '@/components/AppHeader'
 import { AutoThemeWatcher } from '@/components/AutoThemeWatcher'
 import { OfflineBanner } from '@/components/OfflineBanner'
 import { TileGrid } from '@/components/TileGrid'
+import { ViewToggle } from '@/components/ViewToggle'
+import { DiaryTimeline } from '@/components/DiaryTimeline'
+
+type ViewMode = 'grid' | 'diary'
+
+function getInitialViewMode(): ViewMode {
+  const stored = localStorage.getItem('abc-view-mode')
+  return stored === 'diary' ? 'diary' : 'grid'
+}
 
 export default function TilesPage() {
   const { initialize, isInitialized, error, clearError, saveStatus, tiles } = useTilesStore()
+  const [viewMode, setViewMode] = useState<ViewMode>(getInitialViewMode)
+
+  const handleViewChange = useCallback((mode: ViewMode) => {
+    setViewMode(mode)
+    localStorage.setItem('abc-view-mode', mode)
+  }, [])
 
   useEffect(() => {
     if (!isInitialized) {
@@ -36,6 +51,8 @@ export default function TilesPage() {
             />
           </div>
           <span className="text-[0.7rem] font-bold text-white/[0.35] tabular-nums">{completedCount} / 26</span>
+
+          <ViewToggle view={viewMode} onChange={handleViewChange} />
 
           {/* Save status indicator */}
           {saveStatus === 'saving' && (
@@ -71,9 +88,9 @@ export default function TilesPage() {
         </div>
       )}
 
-      <main className="flex-1 px-2.5 pb-2.5 flex flex-col min-h-0">
+      <main className={`flex-1 px-2.5 pb-2.5 flex flex-col min-h-0 ${viewMode === 'diary' ? 'overflow-y-auto' : ''}`}>
         <div className="max-w-6xl w-full mx-auto flex-1 min-h-0">
-          <TileGrid />
+          {viewMode === 'grid' ? <TileGrid /> : <DiaryTimeline />}
         </div>
       </main>
     </div>

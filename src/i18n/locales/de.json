@@ -78,5 +78,13 @@
     "switchTo": "Sprache wechseln",
     "de": "Deutsch",
     "en": "English"
+  },
+  "diary": {
+    "title": "Tagebuch",
+    "toggleGrid": "Kachelansicht",
+    "toggleDiary": "Tagebuch",
+    "emptyTitle": "Dein Tagebuch ist noch leer",
+    "emptySubtitle": "Schließe Aktivitäten ab, um sie in deiner Timeline zu sehen",
+    "ideasSection": "Ideen"
   }
 }

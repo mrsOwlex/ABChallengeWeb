@@ -118,4 +118,32 @@
     box-shadow: 0 0 24px rgba(var(--theme-done-rgb),0.12), inset 0 1px 0 rgba(255,255,255,0.08);
     @apply rounded-[14px];
   }
+
+  /* Diary timeline */
+  .diary-card {
+    @apply card ml-12 mb-4 overflow-hidden cursor-pointer transition-all duration-200;
+  }
+  .diary-card:hover {
+    background: rgba(255, 255, 255, 0.08);
+  }
+  .diary-card:active {
+    transform: scale(0.98);
+  }
+
+  .diary-timeline-dot {
+    @apply absolute w-3 h-3 rounded-full;
+    left: 1.5rem;
+    transform: translateX(-50%);
+    border: 2px solid rgba(0, 0, 0, 0.5);
+  }
+
+  .diary-section-divider {
+    @apply flex items-center gap-3 my-6 ml-12 text-xs font-bold uppercase tracking-wider;
+    color: rgba(255, 255, 255, 0.3);
+  }
+  .diary-section-divider::after {
+    content: '';
+    @apply flex-1 h-px;
+    background: rgba(255, 255, 255, 0.06);
+  }
 }
