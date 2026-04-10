@@ -6,7 +6,7 @@ interface AuthState {
   isLoading: boolean
   error: string | null
   tokens: AuthTokens | null
-  initialize: () => void
+  initialize: () => Promise<void>
   signIn: () => Promise<void>
   signOut: () => void
   clearError: () => void
@@ -19,8 +19,8 @@ export const useAuthStore = create<AuthState>((set) => ({
   error: null,
   tokens: null,
 
-  initialize: () => {
-    googleAuth.initialize()
+  initialize: async () => {
+    await googleAuth.initialize()
     const hasTokens = googleAuth.loadTokensFromStorage()
     if (hasTokens) {
       set({ isAuthenticated: true })

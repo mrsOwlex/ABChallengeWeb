@@ -30,18 +30,53 @@ export interface AuthTokens {
   expiresAt: number
 }
 
+function waitForGIS(timeout = 10000): Promise<void> {
+  return new Promise((resolve, reject) => {
+    if (window.google) {
+      resolve()
+      return
+    }
+    const interval = 100
+    let elapsed = 0
+    const poll = setInterval(() => {
+      elapsed += interval
+      if (window.google) {
+        clearInterval(poll)
+        resolve()
+      } else if (elapsed >= timeout) {
+        clearInterval(poll)
+        reject(new Error('Google Identity Services failed to load'))
+      }
+    }, interval)
+  })
+}
+
 class GoogleAuthService {
   private tokenClient: TokenClient | null = null
   private tokens: AuthTokens | null = null
   private callbackQueue: Array<(tokens: AuthTokens | null, error?: string) => void> = []
+  private initPromise: Promise<void> | null = null
 
-  initialize(): void {
-    if (!window.google || !CLIENT_ID) {
-      console.error('Google Identity Services not loaded or CLIENT_ID missing')
+  async initialize(): Promise<void> {
+    if (this.initPromise) return this.initPromise
+    this.initPromise = this._doInitialize()
+    return this.initPromise
+  }
+
+  private async _doInitialize(): Promise<void> {
+    if (!CLIENT_ID) {
+      console.error('CLIENT_ID missing')
       return
     }
 
-    this.tokenClient = window.google.accounts.oauth2.initTokenClient({
+    try {
+      await waitForGIS()
+    } catch (err) {
+      console.error(err instanceof Error ? err.message : 'GIS load failed')
+      return
+    }
+
+    this.tokenClient = window.google!.accounts.oauth2.initTokenClient({
       client_id: CLIENT_ID,
       scope: SCOPES,
       callback: (response) => {
@@ -57,10 +92,10 @@ class GoogleAuthService {
             accessToken: response.access_token,
             expiresAt: Date.now() + response.expires_in * 1000,
           }
-          
+
           // Store in sessionStorage for page reloads
           sessionStorage.setItem('abchallenge_tokens', JSON.stringify(this.tokens))
-          
+
           this.callbackQueue.forEach(cb => cb(this.tokens))
           this.callbackQueue = []
         }
@@ -86,7 +121,16 @@ class GoogleAuthService {
   }
 
   signIn(): Promise<AuthTokens> {
-    return new Promise((resolve, reject) => {
+    return new Promise(async (resolve, reject) => {
+      if (!this.tokenClient && this.initPromise) {
+        try {
+          await this.initPromise
+        } catch {
+          reject(new Error('Google Auth failed to initialize'))
+          return
+        }
+      }
+
       if (!this.tokenClient) {
         reject(new Error('Google Auth not initialized'))
         return
