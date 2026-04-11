@@ -2,6 +2,7 @@ import { create } from 'zustand'
 import { Tile, DEFAULT_FILLER_TEXT, updateTile } from '@/models/tile'
 import { ThemeId, DEFAULT_THEME, applyTheme } from '@/models/theme'
 import { useAutoThemeStore } from '@/state/autoThemeStore'
+import { useShareStore } from '@/state/shareStore'
 import { driveStorage } from '@/services/driveStorage'
 import { debounce } from '@/utils/debounce'
 import { offlineQueue } from '@/services/offlineQueue'
@@ -36,11 +37,13 @@ export const useTilesStore = create<TilesState>((set, get) => {
   // Debounced save function
   const debouncedSave = debounce(async () => {
     const { tiles, fillerText, theme } = get()
+    const { isPublished } = useShareStore.getState()
 
     set({ saveStatus: 'saving' })
 
     try {
-      await driveStorage.saveData({ version: 2, tiles, fillerText, theme })
+      const sharing = isPublished ? { published: true } : undefined
+      await driveStorage.saveData({ version: 2, tiles, fillerText, theme, sharing })
       set({ saveStatus: 'saved', offline: false, pendingChanges: false })
       offlineQueue.clear()
 
@@ -102,6 +105,8 @@ export const useTilesStore = create<TilesState>((set, get) => {
         } else {
           set({ tiles: data.tiles, fillerText: data.fillerText, theme, isLoading: false, isInitialized: true })
         }
+
+        useShareStore.getState().initFromTilesData(data.sharing)
       } catch (error) {
         console.error('Failed to initialize tiles:', error)
 
@@ -175,11 +180,13 @@ export const useTilesStore = create<TilesState>((set, get) => {
 
     saveTiles: async () => {
       const { tiles, fillerText, theme } = get()
+      const { isPublished } = useShareStore.getState()
 
       set({ saveStatus: 'saving' })
 
       try {
-        await driveStorage.saveData({ version: 2, tiles, fillerText, theme })
+        const sharing = isPublished ? { published: true } : undefined
+        await driveStorage.saveData({ version: 2, tiles, fillerText, theme, sharing })
         set({ saveStatus: 'saved', offline: false, pendingChanges: false })
         offlineQueue.clear()
       } catch (error) {

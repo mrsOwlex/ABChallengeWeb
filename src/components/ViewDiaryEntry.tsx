@@ -1,21 +1,19 @@
 import { memo } from 'react'
-import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { Tile } from '@/models/tile'
 import { getTileState } from '@/utils/tileState'
 import { getStateColor, STATE_CONFIG, ACCENT_CLASS } from '@/utils/tileStateConfig'
 import { formatDate } from '@/utils/date'
-import { useThumbnail } from '@/services/thumbCache'
+import { usePublicThumbnail } from '@/hooks/usePublicThumbnail'
 
-interface DiaryEntryProps {
+interface ViewDiaryEntryProps {
   tile: Tile
   index: number
 }
 
-export const DiaryEntry = memo(function DiaryEntry({ tile, index }: DiaryEntryProps) {
-  const navigate = useNavigate()
+export const ViewDiaryEntry = memo(function ViewDiaryEntry({ tile, index }: ViewDiaryEntryProps) {
   const { t } = useTranslation()
-  const { url: thumbUrl } = useThumbnail(tile.thumbFileId)
+  const { url: thumbUrl } = usePublicThumbnail(tile.thumbFileId)
   const state = getTileState(tile)
   const config = STATE_CONFIG[state]
   const stateColor = getStateColor(state)
@@ -35,19 +33,8 @@ export const DiaryEntry = memo(function DiaryEntry({ tile, index }: DiaryEntryPr
         }}
       />
 
-      {/* Card */}
-      <div
-        className={`diary-card ${ACCENT_CLASS[state] || ''}`}
-        onClick={() => navigate(`/tiles/${tile.id}`)}
-        role="button"
-        tabIndex={0}
-        onKeyDown={(e) => {
-          if (e.key === 'Enter' || e.key === ' ') {
-            e.preventDefault()
-            navigate(`/tiles/${tile.id}`)
-          }
-        }}
-      >
+      {/* Card — read-only, no click handler */}
+      <div className={`diary-card ${ACCENT_CLASS[state] || ''}`}>
         {/* Image variant */}
         {hasImage && (
           <div className="relative aspect-video overflow-hidden max-w-md mx-auto">
@@ -57,9 +44,7 @@ export const DiaryEntry = memo(function DiaryEntry({ tile, index }: DiaryEntryPr
               className="w-full h-full object-cover"
               loading="lazy"
             />
-            {/* Dark gradient overlay */}
             <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
-            {/* Letter badge on image */}
             <span
               className="absolute top-3 left-3 text-3xl font-black drop-shadow-lg"
               style={{ color: 'white', textShadow: `0 0 20px ${stateColor}60` }}
@@ -71,7 +56,6 @@ export const DiaryEntry = memo(function DiaryEntry({ tile, index }: DiaryEntryPr
 
         {/* Content area */}
         <div className="p-4">
-          {/* Header row: letter (if no image), badge, date */}
           <div className="flex items-center gap-3">
             {!hasImage && (
               <span
@@ -97,7 +81,6 @@ export const DiaryEntry = memo(function DiaryEntry({ tile, index }: DiaryEntryPr
             )}
           </div>
 
-          {/* Note */}
           {tile.note && tile.note.trim() && (
             <p className="mt-2.5 text-sm text-white/60 leading-relaxed line-clamp-3">
               {tile.note}

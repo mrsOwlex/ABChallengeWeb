@@ -86,5 +86,24 @@
     "emptyTitle": "Dein Tagebuch ist noch leer",
     "emptySubtitle": "Schließe Aktivitäten ab, um sie in deiner Timeline zu sehen",
     "ideasSection": "Ideen"
+  },
+  "share": {
+    "publishButton": "Challenge teilen",
+    "publishing": "Wird veröffentlicht...",
+    "published": "Challenge ist öffentlich",
+    "unpublish": "Nicht mehr teilen",
+    "copyLink": "Link kopieren",
+    "linkCopied": "Kopiert!",
+    "shareVia": "Teilen...",
+    "description": "Mache deine ABC Challenge öffentlich sichtbar. Jeder mit dem Link kann deinen Fortschritt, Notizen und Fotos sehen.",
+    "error": "Fehler beim Veröffentlichen. Bitte versuche es erneut."
+  },
+  "viewer": {
+    "notFound": "Challenge nicht gefunden",
+    "private": "Diese Challenge ist privat",
+    "loadError": "Laden fehlgeschlagen",
+    "privateDescription": "Der Ersteller hat diese Challenge nicht öffentlich geteilt.",
+    "errorDescription": "Die Challenge konnte nicht geladen werden. Versuche es später erneut.",
+    "startYourOwn": "Starte deine eigene ABC Challenge"
   }
 }

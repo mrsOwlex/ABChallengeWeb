@@ -260,6 +260,75 @@ export function getFileDownloadUrl(fileId: string): string {
   return `${API_BASE}/files/${fileId}?alt=media&access_token=${token}`
 }
 
+// ── Public sharing ──────────────────────────────────────────────
+
+const API_KEY = import.meta.env.VITE_GOOGLE_API_KEY as string | undefined
+
+/** Make a Drive file publicly readable (anyone with the link). */
+export async function shareFilePublic(fileId: string): Promise<void> {
+  const headers = await getHeaders()
+
+  const response = await fetch(
+    `${API_BASE}/files/${fileId}/permissions`,
+    {
+      method: 'POST',
+      headers: {
+        ...headers,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ type: 'anyone', role: 'reader' }),
+    }
+  )
+
+  if (!response.ok) {
+    const errorText = await response.text()
+    throw new Error(`Failed to share file: ${response.statusText} - ${errorText}`)
+  }
+}
+
+/** Revoke public access from a Drive file. */
+export async function unshareFilePublic(fileId: string): Promise<void> {
+  const headers = await getHeaders()
+
+  const response = await fetch(
+    `${API_BASE}/files/${fileId}/permissions/anyoneWithLink`,
+    {
+      method: 'DELETE',
+      headers,
+    }
+  )
+
+  // 404 is fine – permission may already be removed
+  if (!response.ok && response.status !== 404) {
+    const errorText = await response.text()
+    throw new Error(`Failed to unshare file: ${response.statusText} - ${errorText}`)
+  }
+}
+
+export class PublicApiError extends Error {
+  constructor(public readonly status: number) {
+    super(`Public API error: ${status}`)
+    this.name = 'PublicApiError'
+  }
+}
+
+async function fetchPublic(fileId: string): Promise<Response> {
+  if (!API_KEY) throw new Error('VITE_GOOGLE_API_KEY is not configured')
+  const response = await fetch(`${API_BASE}/files/${fileId}?alt=media&key=${API_KEY}`)
+  if (!response.ok) throw new PublicApiError(response.status)
+  return response
+}
+
+export async function getFileContentPublic(fileId: string): Promise<string> {
+  const response = await fetchPublic(fileId)
+  return response.text()
+}
+
+export async function getFileBlobPublic(fileId: string): Promise<Blob> {
+  const response = await fetchPublic(fileId)
+  return response.blob()
+}
+
 // Helper to list all duplicate folders/files (for cleanup)
 export async function listAllByName(name: string): Promise<DriveFile[]> {
   const headers = await getHeaders()

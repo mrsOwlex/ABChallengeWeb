@@ -86,5 +86,24 @@
     "emptyTitle": "Your diary is empty",
     "emptySubtitle": "Complete activities to see them appear in your timeline",
     "ideasSection": "Ideas"
+  },
+  "share": {
+    "publishButton": "Share Challenge",
+    "publishing": "Publishing...",
+    "published": "Challenge is public",
+    "unpublish": "Make private",
+    "copyLink": "Copy link",
+    "linkCopied": "Copied!",
+    "shareVia": "Share...",
+    "description": "Make your ABC Challenge publicly visible. Anyone with the link can see your progress, notes, and photos.",
+    "error": "Failed to publish. Please try again."
+  },
+  "viewer": {
+    "notFound": "Challenge not found",
+    "private": "This challenge is private",
+    "loadError": "Failed to load",
+    "privateDescription": "The owner has not shared this challenge publicly.",
+    "errorDescription": "Could not load this challenge. Please try again later.",
+    "startYourOwn": "Start your own ABC Challenge"
   }
 }

@@ -1,12 +1,21 @@
 import { driveStorage } from './driveStorage'
 import { useTilesStore } from '@/state/tilesStore'
+import { useShareStore } from '@/state/shareStore'
 
 export async function uploadThumbnail(
-  tileId: string, 
+  tileId: string,
   blob: Blob
 ): Promise<string> {
   const fileName = `thumb_${tileId}_${Date.now()}.webp`
   const fileId = await driveStorage.uploadThumbnail(blob, fileName)
+
+  if (useShareStore.getState().isPublished) {
+    try {
+      await driveStorage.shareFilePublic(fileId)
+    } catch (error) {
+      console.warn('Failed to auto-share new thumbnail:', error)
+    }
+  }
   
   // Update tile with new thumbnail
   const { updateTile } = useTilesStore.getState()

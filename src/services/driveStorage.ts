@@ -1,4 +1,4 @@
-import { TilesData, createInitialTiles, DEFAULT_FILLER_TEXT } from '@/models/tile'
+import { Tile, TilesData, createInitialTiles, DEFAULT_FILLER_TEXT } from '@/models/tile'
 import * as driveApi from './driveApi'
 
 const APP_FOLDER_NAME = import.meta.env.VITE_APP_FOLDER_NAME || 'ABChallenge'
@@ -178,6 +178,49 @@ class DriveStorage {
 
   getThumbnailUrl(fileId: string): string {
     return driveApi.getFileDownloadUrl(fileId)
+  }
+
+  getTilesFileId(): string | null {
+    return this.tilesFileId
+  }
+
+  getFolderId(): string | null {
+    return this.folderId
+  }
+
+  async shareAllPublic(tiles: Tile[]): Promise<void> {
+    await this.batchPermissionOp(tiles, driveApi.shareFilePublic)
+  }
+
+  async unshareAll(tiles: Tile[]): Promise<void> {
+    await this.batchPermissionOp(tiles, driveApi.unshareFilePublic)
+  }
+
+  /** Share a single file publicly. Used by thumbStorage for auto-sharing new uploads. */
+  async shareFilePublic(fileId: string): Promise<void> {
+    await driveApi.shareFilePublic(fileId)
+  }
+
+  private async batchPermissionOp(
+    tiles: Tile[],
+    op: (fileId: string) => Promise<void>,
+  ): Promise<void> {
+    await this.initialize()
+
+    const fileIds: string[] = []
+    if (this.tilesFileId) fileIds.push(this.tilesFileId)
+    for (const tile of tiles) {
+      if (tile.thumbFileId) fileIds.push(tile.thumbFileId)
+    }
+
+    for (let i = 0; i < fileIds.length; i += 5) {
+      const batch = fileIds.slice(i, i + 5)
+      const results = await Promise.allSettled(batch.map(id => op(id)))
+      const failures = results.filter(r => r.status === 'rejected')
+      if (failures.length > 0) {
+        console.warn(`${failures.length} permission operation(s) failed:`, failures)
+      }
+    }
   }
 
   // Cleanup method for testing/debugging

@@ -5,6 +5,7 @@ export interface TilesData {
   tiles: Tile[]
   fillerText: string
   theme?: string
+  sharing?: { published: boolean; publishedAt?: string }
 }
 
 export interface Tile {
