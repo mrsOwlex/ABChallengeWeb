@@ -55,7 +55,7 @@ export default function TileDetailPage() {
 
   if (!tile) {
     return (
-      <div className="min-h-screen flex flex-col">
+      <div className="min-h-[100dvh] flex flex-col">
         <AppHeader />
         <OfflineBanner />
         <main className="flex-1 flex items-center justify-center">
@@ -69,7 +69,7 @@ export default function TileDetailPage() {
   const config = STATE_CONFIG[state]
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-[100dvh] flex flex-col">
       <AppHeader />
       <OfflineBanner />
 

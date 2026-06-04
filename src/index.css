@@ -3,8 +3,14 @@
 @tailwind utilities;
 
 @layer base {
+  html {
+    background: #0f172a;
+  }
+
   body {
-    @apply text-white min-h-screen font-display;
+    @apply text-white font-display;
+    min-height: 100dvh;
+    padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
     /* Default background — overridden by applyTheme() at runtime */
     background: linear-gradient(145deg, #0f172a 0%, #1e1b4b 40%, #172554 100%);
 

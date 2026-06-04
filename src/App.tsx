@@ -9,7 +9,7 @@ function App() {
   const { isAuthenticated } = useAuthStore()
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-[100dvh]">
       <Routes>
         {/* Public viewer — no auth required */}
         <Route path="/view/:fileId" element={<ViewPage />} />

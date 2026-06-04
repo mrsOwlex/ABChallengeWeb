@@ -17,7 +17,7 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-[100dvh] flex flex-col">
       <header className="p-4 flex items-center justify-between">
         <span
           className="text-sm font-bold tracking-wider uppercase"
