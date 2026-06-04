@@ -82,4 +82,9 @@ export function applyTheme(id: ThemeId, override?: ThemeConfig): void {
   s.setProperty('--theme-g3-rgb', hexToRgb(t.gradient[2]))
 
   s.background = `linear-gradient(145deg, ${t.bg[0]} 0%, ${t.bg[1]} 40%, ${t.bg[2]} 100%)`
+
+  document.documentElement.style.background = t.bg[0]
+
+  const meta = document.querySelector('meta[name="theme-color"]')
+  if (meta) meta.setAttribute('content', t.bg[0])
 }
